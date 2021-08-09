@@ -1,0 +1,25 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package clases;
+
+/**
+ *
+ * @author aarismendi
+ */
+public class Suma extends Operacion{
+
+    public Suma() {
+    }
+
+    public Suma(double numero1, double numero2) {
+        super(numero1, numero2);
+    }
+    public double sumar () {
+        
+        return getNumero1() + getNumero2();
+    }
+    
+}
