@@ -6,6 +6,7 @@
 package formularios;
 
 import clases.Empleado;
+import com.oracle.jrockit.jfr.DataType;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
@@ -71,19 +72,115 @@ public class FormEmpleado extends javax.swing.JFrame {
         return emp;
 
     }
-     public void limpiarFormulario(){
-         txtCodigo.setText("");
-         txtNombre.setText("");
-         txtSueldo.setText("");
-         rGenero1.setSelected(true);
-         rGenero2.setSelected(false);
-         chbInteres1.setSelected(false);
-         chbInteres2.setSelected(false);
-         chbInteres3.setSelected(false);
-         
+
+    public void limpiarFormulario() {
+        txtCodigo.setText("");
+        txtNombre.setText("");
+        txtSueldo.setText("");
+        rGenero1.setSelected(true);
+        rGenero2.setSelected(false);
+        chbInteres1.setSelected(false);
+        chbInteres2.setSelected(false);
+        chbInteres3.setSelected(false);
+
         cmbCargo.setSelectedIndex(0);
-           
-     }
+
+    }
+
+    public void mostrarDatos() {
+        for (Empleado el : lista) {
+
+            String datos = "codigo: " + el.getCodigo() + "\n Nombre: " + el.getNombre()
+                    + "\n Sueldo: " + el.getSueldo() + "\n Genero: " + el.getGenero()
+                    + "\n Cargo: " + el.getCargo() + "\n";
+            for (String intereses : el.getInteres()) {
+
+                datos += intereses + " ";
+            }
+
+            JOptionPane.showMessageDialog(null, datos);
+        }
+    }
+
+    public void eliminarEmpleado() {
+        String codigo = JOptionPane.showInputDialog("Ingrese el codigo del empleado que  quiere eliminar");
+        boolean encontrado = false;
+        for (int i = 0; i < lista.size(); i++) {
+            if (lista.get(i).getCodigo().equals(codigo)) {
+                lista.remove(i);
+                i = lista.size();
+                encontrado = true;
+                JOptionPane.showMessageDialog(null, "Registro eliminado con exito!");
+            }
+        }
+        if (!encontrado) {
+            JOptionPane.showMessageDialog(null, "El codigo ingresado no existe");
+
+        }
+    }
+
+    public void buscarEmpleado() {
+        String codigo = txtBuscar.getText();
+        boolean encontrado = false;
+        for (int i = 0; i < lista.size(); i++) {
+            if (lista.get(i).getCodigo().equals(codigo)) {
+                txtCodigo.setText(codigo);
+                txtNombre.setText(lista.get(i).getNombre());
+                txtSueldo.setText(String.valueOf(lista.get(i).getSueldo()));
+                if (lista.get(i).getGenero() == 'F') {
+                    rGenero1.setSelected(true);
+                } else if (lista.get(i).getGenero() == 'M') {
+                    rGenero2.setSelected(true);
+
+                }
+                for (String intereses : lista.get(i).getInteres()) {
+
+                    if (intereses.equals("PHP")) {
+                        chbInteres1.setSelected(true);
+
+                    }
+                    if (intereses.equals("JAVA")) {
+                        chbInteres2.setSelected(true);
+
+                    }
+                    if (intereses.equals("C#")) {
+                        chbInteres3.setSelected(true);
+                    }
+                }
+                i = lista.size();
+                encontrado = true;
+
+            }
+
+        }
+        if (!encontrado) {
+
+            JOptionPane.showMessageDialog(null, "Codigo invalido");
+
+        }
+    }
+    
+    public void modificarEmpleado(){
+      Empleado em = capturarDatos();
+      boolean encontrado = false;
+      String codigo = em.getCodigo();
+        for (int i = 0; i < lista.size(); i++) {
+            
+            if (lista.get(i).getCodigo().equals(codigo)) {
+               
+               lista.set(i, em);
+                i= lista.size();
+                encontrado= true;
+                
+                JOptionPane.showMessageDialog(null, "Registro actualizado con exito!");
+            }
+            
+        }
+        if (!encontrado) {
+            JOptionPane.showMessageDialog(null, "Codigo no encontrado");
+            
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -126,6 +223,11 @@ public class FormEmpleado extends javax.swing.JFrame {
         jLabel1.setText("Codigo");
 
         btnBuscar.setText("Buscar");
+        btnBuscar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnBuscarMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -169,11 +271,17 @@ public class FormEmpleado extends javax.swing.JFrame {
 
         chbInteres1.setText("PHP");
 
-        chbInteres2.setText("Java");
+        chbInteres2.setText("JAVA");
 
         chbInteres3.setText("C#");
 
         jLabel7.setText("Cargo");
+
+        cmbCargo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbCargoActionPerformed(evt);
+            }
+        });
 
         btnGuardar.setText("Guardar");
         btnGuardar.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -183,10 +291,25 @@ public class FormEmpleado extends javax.swing.JFrame {
         });
 
         btnMostrar.setText("Mostrar");
+        btnMostrar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnMostrarMouseClicked(evt);
+            }
+        });
 
         btnEliminar.setText("Eliminar");
+        btnEliminar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnEliminarMouseClicked(evt);
+            }
+        });
 
         btnModificar.setText("Modificar");
+        btnModificar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnModificarMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -294,6 +417,34 @@ public class FormEmpleado extends javax.swing.JFrame {
         limpiarFormulario();
 
     }//GEN-LAST:event_btnGuardarMouseClicked
+
+    private void btnMostrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnMostrarMouseClicked
+        // invocar metodo mostrar datosd
+        mostrarDatos();
+    }//GEN-LAST:event_btnMostrarMouseClicked
+
+    private void btnEliminarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEliminarMouseClicked
+        // TODO add your handling code here:
+
+        eliminarEmpleado();
+    }//GEN-LAST:event_btnEliminarMouseClicked
+
+    private void cmbCargoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbCargoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbCargoActionPerformed
+
+    private void btnBuscarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBuscarMouseClicked
+        // TODO add your handling code here:
+        buscarEmpleado();
+        txtBuscar.setText("");
+        
+    }//GEN-LAST:event_btnBuscarMouseClicked
+
+    private void btnModificarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnModificarMouseClicked
+        // TODO add your handling code here:
+        modificarEmpleado();
+        limpiarFormulario();
+    }//GEN-LAST:event_btnModificarMouseClicked
 
     /**
      * @param args the command line arguments
